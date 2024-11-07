@@ -1,6 +1,6 @@
 const stockGrant = 2900
 const CRORE = 10000000
-globalConversionRate = null
+let globalConversionRate = null
 
 import {CURRENCY_CONVERSION_API_KEY} from "./config.js"
 
