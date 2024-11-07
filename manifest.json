@@ -1,0 +1,17 @@
+{
+    "manifest_version":3,
+    "name": "Rubrik Stock Worth Calculator",
+    "description": "This extension helps me keep track of my Rubrik's stock worth in INR",
+    "version":"1.0",
+    "icons": {                   
+        "16": "icons/rbk.png",
+        "32": "icons/rbk32.png",
+        "48": "icons/rbk48.png",
+        "128": "icons/rbk128.png"  
+      },
+    "action": {
+      "default_title": "Rubrik Stock Worth Calculator",
+      "default_popup": "index.html"
+    },
+    "permissions": []
+}
