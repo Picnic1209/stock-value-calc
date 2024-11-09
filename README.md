@@ -1,6 +1,3 @@
-# CodeforcesExtension
-This extension keeps track of my personal stock information at Rubrik, tracking it's current worth!
+# Stock Worth Calculator
+A personal project meant to keep trackc of my stock's current worth, saving me from all the scary calculations (Maths. Yes)!
 
-
-## Future Plans:
-* Add support to see net worth at a given time in the future (to keep track of refreshers)
