@@ -88,13 +88,27 @@ async function getRubrikStockPriceInUSDFromGoogle() {
     const response = await fetch(proxyUrl + rubrikStockUrl, rubrikStockOptions);
     console.log('Status:', response.status); // Check the status code
     const responseString = await response.text();
-    console.log(responseString);
+    console.log(responseString);    // Something like )]}'{"PriceUpdate":[[[[0,"/g/11vwykrj9t",null,"NYSE",null,null,null,"USD",null,null,null,null,null,null,null,["66.51","+12.85","23.95%",2,"6 Dec, 7:32 am GMT-5",1,null,null,null,null,null,null,[1733488354]],null,[["/g/11vwykrj9t"],"Rubrik Inc","RBRK","53.66",53.66,"+1.04","1.98%",2,"5 Dec, 4:00 pm GMT-5","/search?sca_esv\u003d360d606574466e04\u0026q\u003dNYSE:+RBRK\u0026stick\u003dH4sIAAAAAAAAAONgecRowS3w8sc9YSn9SWtOXmPU5OIKzsgvd80rySypFJLmYoOyBKX4uXj10_UNDcvKK7OLsixLeBaxcvlFBrtaKQQ5BXkDAMJ_PnZKAAAA","4:00 pm GMT-5",10,[1733432403]],null,[52.62,2]],null,["/g/11vwykrj9t"]]]]}
+    
+    // Step 1: Remove the extraneous characters at the start
+    const cleanedResponse = responseString.replace(")]}'", "");
+
+    // Step 2: Parse the cleaned response as JSON
+    let parsedData = JSON.parse(cleanedResponse);
+    let afterMarketValue = parsedData["PriceUpdate"][0][0][0][15][0]
+    console.log(JSON.stringify(afterMarketValue, null, 2))
+
+    let val = {}
+    val['afterMarketVal'] = parseFloat(afterMarketValue)
+    
+    // return parseFloat(afterMarketValue)
     // Use string matching to extract a specific value, if needed
     const match = responseString.match(/"RBRK","([^,]+),([^,]+),([^,]+)/);
     if (match && match[2]) {
         const extractedValue = match[2];
         console.log("Extracted Value:", extractedValue);
-        return parseFloat(extractedValue);
+        val['curr_val'] = parseFloat(extractedValue);
+        return val
     } else {
         console.log("Value not found from API!");
         return null
@@ -150,7 +164,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
 
-        let stockPrice = await getRubrikStockPriceInUSDFromGoogle();
+        let stockPriceResponse = await getRubrikStockPriceInUSDFromGoogle();
+        let stockPrice = stockPriceResponse['curr_val']
+
         console.log("Current Stock Price: " + stockPrice);
         if(stockPrice == null){
             console.log("Error fetching rubrik stock price")
@@ -160,6 +176,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // update stock price
         const stockPriceElement = document.getElementById('RubrikStockPrice')
         stockPriceElement.innerHTML = `$ ${stockPrice}`
+
+        // update after market price
+        let afterMarketStockPrice = stockPriceResponse['afterMarketVal']
+
+        const afterMarketStockPriceElement = document.getElementById('RubrikStockPriceCollapsible')
+        afterMarketStockPriceElement.innerHTML = `$ ${afterMarketStockPrice}`
+        
 
         // Fetch US stock price
         try {
@@ -186,7 +209,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Update Post Tax value
             const WorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTax')
-            WorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactVal*0.7/4))} `
+            WorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactVal*0.67/4))} `
+
+
+
+            // Update all the fields in After Market price
+
+            // Update Total worth
+            console.log("Total stock worth: ")
+            let exactValAfterMarket = conversionRate * afterMarketStockPrice * stockGrant
+            let afterMarketVal = Math.floor(exactValAfterMarket)
+            const afterMarketFormattedNumber = formatter.format(afterMarketVal);               
+            console.log(afterMarketFormattedNumber)
+
+            const AfterMarketWorthInINRElement = document.getElementById('WorthInINRCollapsible')
+            AfterMarketWorthInINRElement.innerHTML = `&#8377; ${afterMarketFormattedNumber}`
+
+            // Update Per year Total Worth
+            const AFterMarketWorthPerYearElement = document.getElementById('WorthPerYearCollapsible')
+            AFterMarketWorthPerYearElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket/4))} `
+
+            // Update Post Tax value
+            const AfterMarketWorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTaxCollapsible')
+            AfterMarketWorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket*0.67/4))} `
+
+
 
         } catch (error) {
             console.error("Error fetching US to INR conversion price!");

@@ -27,11 +27,47 @@
                     <td id="WorthPerYear">Loading</td>
                 </tr>
                 <tr>
-                    <td>Per Year (After Tax)</td>
+                    <td>Per Year After Tax</td>
                     <td id="WorthPerYearPostTax">Loading</td>
                 </tr>
             </table>
         </center>
+    </div>
+
+    <!-- Collapsible Section -->
+    <div id="collapsibleStockInfo" class="container my-4">
+        <button 
+            class="btn btn-info text-white w-100 py-2 mb-3 fw-bold shadow-sm" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#collapseContent" 
+            aria-expanded="false" 
+            aria-controls="collapseContent">
+            After Market Stock Information
+        </button>
+        <div class="collapse" id="collapseContent">
+            <div class="card card-body">
+                <h1 class="text-muted text-center">Stock Information</h1>
+                <table class="table table-bordered table-sm text-center">
+                    <tr>
+                        <td>After Market Rubrik Stock Price</td>
+                        <td id="RubrikStockPriceCollapsible">Loading</td>
+                    </tr>  
+                    <tr>
+                        <td>Current Worth</td>
+                        <td id="WorthInINRCollapsible">Loading</td>
+                    </tr>
+                    <tr>
+                        <td>Per Year</td>
+                        <td id="WorthPerYearCollapsible">Loading</td>
+                    </tr>
+                    <tr>
+                        <td>Per Year After Tax</td>
+                        <td id="WorthPerYearPostTaxCollapsible">Loading</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="calculator" class="container my-4 p-4 bg-light border rounded shadow-sm">
@@ -48,8 +84,8 @@
         </center>
     </div>
     
-    
-
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="popup.js" type="module"></script>
 </body>
 </html>
