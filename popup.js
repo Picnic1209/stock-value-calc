@@ -95,11 +95,13 @@ async function getRubrikStockPriceInUSDFromGoogle() {
 
     // Step 2: Parse the cleaned response as JSON
     let parsedData = JSON.parse(cleanedResponse);
-    let afterMarketValue = parsedData["PriceUpdate"][0][0][0][15][0]
+    const afterMarketValue = parsedData?.PriceUpdate?.[0]?.[0]?.[0]?.[15]?.[0] ?? null;
     console.log(JSON.stringify(afterMarketValue, null, 2))
 
     let val = {}
-    val['afterMarketVal'] = parseFloat(afterMarketValue)
+    if(afterMarketValue){
+        val['afterMarketVal'] = parseFloat(afterMarketValue)
+    }
     
     // return parseFloat(afterMarketValue)
     // Use string matching to extract a specific value, if needed
@@ -181,7 +183,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         let afterMarketStockPrice = stockPriceResponse['afterMarketVal']
 
         const afterMarketStockPriceElement = document.getElementById('RubrikStockPriceCollapsible')
-        afterMarketStockPriceElement.innerHTML = `$ ${afterMarketStockPrice}`
+        if (afterMarketStockPrice) {
+            afterMarketStockPriceElement.innerHTML = `$ ${afterMarketStockPrice}`
+        } else{
+            afterMarketStockPriceElement.innerHTML = `Currently Markets are Open!`
+        }
         
 
         // Fetch US stock price
@@ -214,25 +220,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
             // Update all the fields in After Market price
+            
+            if(afterMarketStockPrice){
+                // Update Total worth
+                console.log("Total stock worth: ")
+                let exactValAfterMarket = conversionRate * afterMarketStockPrice * stockGrant
+                let afterMarketVal = Math.floor(exactValAfterMarket)
+                const afterMarketFormattedNumber = formatter.format(afterMarketVal);               
+                console.log(afterMarketFormattedNumber)
 
-            // Update Total worth
-            console.log("Total stock worth: ")
-            let exactValAfterMarket = conversionRate * afterMarketStockPrice * stockGrant
-            let afterMarketVal = Math.floor(exactValAfterMarket)
-            const afterMarketFormattedNumber = formatter.format(afterMarketVal);               
-            console.log(afterMarketFormattedNumber)
+                const AfterMarketWorthInINRElement = document.getElementById('WorthInINRCollapsible')
+                AfterMarketWorthInINRElement.innerHTML = `&#8377; ${afterMarketFormattedNumber}`
 
-            const AfterMarketWorthInINRElement = document.getElementById('WorthInINRCollapsible')
-            AfterMarketWorthInINRElement.innerHTML = `&#8377; ${afterMarketFormattedNumber}`
+                // Update Per year Total Worth
+                const AFterMarketWorthPerYearElement = document.getElementById('WorthPerYearCollapsible')
+                AFterMarketWorthPerYearElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket/4))} `
 
-            // Update Per year Total Worth
-            const AFterMarketWorthPerYearElement = document.getElementById('WorthPerYearCollapsible')
-            AFterMarketWorthPerYearElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket/4))} `
-
-            // Update Post Tax value
-            const AfterMarketWorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTaxCollapsible')
-            AfterMarketWorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket*0.67/4))} `
-
+                // Update Post Tax value
+                const AfterMarketWorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTaxCollapsible')
+                AfterMarketWorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket*0.67/4))} `
+            }
 
 
         } catch (error) {
