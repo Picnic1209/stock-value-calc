@@ -1,5 +1,9 @@
 const stockGrant = 2900
 const CRORE = 10000000
+
+const taxPercentage = 0.3*(1.10)*(1.04)
+const multiplyForTaxDeduction = 1- taxPercentage // 34.32% bruh
+
 let globalConversionRate = null
 
 import {CURRENCY_CONVERSION_API_KEY} from "./config.js"
@@ -215,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Update Post Tax value
             const WorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTax')
-            WorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactVal*0.67/4))} `
+            WorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactVal*multiplyForTaxDeduction/4))} `
 
 
 
@@ -238,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Update Post Tax value
                 const AfterMarketWorthPerYearPostTaxElement = document.getElementById('WorthPerYearPostTaxCollapsible')
-                AfterMarketWorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket*0.67/4))} `
+                AfterMarketWorthPerYearPostTaxElement.innerHTML = `&#8377; ${formatter.format(Math.floor(exactValAfterMarket*multiplyForTaxDeduction/4))} `
             }
 
 
