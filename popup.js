@@ -12,6 +12,9 @@ const RUBRIK_STOCK_EXCHANGE = 'XNYS'
 const RUBRIK_STOCK_SYMBOL = 'RBRK'
 const proxyUrl = 'https://cloudflare-cors-anywhere.parag-cors-proxy.workers.dev/?';
 
+const CURRENT_PRICE_KEY = 'current_price'
+const AFTER_MARKET_PRICE_KEY = 'after_market_key'
+
 // Gets USD to INR rate is the value is more stale than 1 hour
 async function getConversionRate() {
     const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -100,28 +103,20 @@ async function getRubrikStockPriceInUSDFromGoogle() {
     // Step 2: Parse the cleaned response as JSON
     let parsedData = JSON.parse(cleanedResponse);
     const afterMarketValue = parsedData?.PriceUpdate?.[0]?.[0]?.[0]?.[15]?.[0] ?? null;
-    console.log(JSON.stringify(afterMarketValue, null, 2))
+    console.log("aftermarketValue: " + JSON.stringify(afterMarketValue, null, 2))
 
     let val = {}
     if(afterMarketValue){
-        val['afterMarketVal'] = parseFloat(afterMarketValue)
-    }
-    
-    // return parseFloat(afterMarketValue)
-    // Use string matching to extract a specific value, if needed
-    const match = responseString.match(/"RBRK","([^,]+),([^,]+),([^,]+)/);
-    if (match && match[2]) {
-        const extractedValue = match[2];
-        console.log("Extracted Value:", extractedValue);
-        val['curr_val'] = parseFloat(extractedValue);
-        return val
-    } else {
-        console.log("Value not found from API!");
-        return null
+        val[AFTER_MARKET_PRICE_KEY] = parseFloat(afterMarketValue)
     }
 
-    
+    const currentValue = parsedData?.PriceUpdate?.[0]?.[0]?.[0]?.[17]?.[3] ?? null;
+    console.log("CurrentValue: " + JSON.stringify(currentValue, null, 2))
 
+    if(currentValue){
+        val[CURRENT_PRICE_KEY] = parseFloat(currentValue)
+    }
+    return val
 }
 
 // Get's the input, calculates stock price estimate and populates the estimated price
@@ -171,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
 
         let stockPriceResponse = await getRubrikStockPriceInUSDFromGoogle();
-        let stockPrice = stockPriceResponse['curr_val']
+        let stockPrice = stockPriceResponse[CURRENT_PRICE_KEY]
 
         console.log("Current Stock Price: " + stockPrice);
         if(stockPrice == null){
@@ -184,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         stockPriceElement.innerHTML = `$ ${stockPrice}`
 
         // update after market price
-        let afterMarketStockPrice = stockPriceResponse['afterMarketVal']
+        let afterMarketStockPrice = stockPriceResponse[AFTER_MARKET_PRICE_KEY]
 
         const afterMarketStockPriceElement = document.getElementById('RubrikStockPriceCollapsible')
         if (afterMarketStockPrice) {
