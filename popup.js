@@ -30,23 +30,9 @@ async function getConversionRate() {
 
     // Otherwise, fetch new data from API
     try {
-
-        // Fetch USD to INR rate
-        // Using RAPID API 
-        // Free tier - 1000 requests/month
-        const currencyConversionUrl = 'https://currency-conversion-and-exchange-rates.p.rapidapi.com/convert?from=USD&to=INR&amount=1';
-        const currencyConversionOptions = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': CURRENCY_CONVERSION_API_KEY,
-                'x-rapidapi-host': 'currency-conversion-and-exchange-rates.p.rapidapi.com'
-            }
-        };
-        const response = await fetch(currencyConversionUrl, currencyConversionOptions);
-        const result = await response.json();
-        console.log(result);
         
-        let conversionRate = result.result;
+        // Change API function to fetch from different endpoints
+        let conversionRate = await getUSDToINRCurrencyAPI();
         globalConversionRate = conversionRate;
         
         // Save to localStorage
@@ -58,6 +44,47 @@ async function getConversionRate() {
         console.error("Error fetching conversion rate:", error);
         return null;
     }
+}
+
+// Fetch USD To INR currency-conversion-and-exchange-rates
+async function getUSDToINRCurrencyCAEAPI() {
+    // Fetch USD to INR rate
+    // Using RAPID API 
+    // Free tier - 1000 requests/month
+    const currencyConversionUrl = 'https://currency-conversion-and-exchange-rates.p.rapidapi.com/convert?from=USD&to=INR&amount=1';
+        const currencyConversionOptions = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': CURRENCY_CONVERSION_API_KEY,
+                'x-rapidapi-host': 'currency-conversion-and-exchange-rates.p.rapidapi.com'
+            }
+        };
+        const response = await fetch(currencyConversionUrl, currencyConversionOptions);
+        const result = await response.json();
+        console.log(result);
+        
+        return result.result;
+}
+
+// Fetch USD To INR currencyAPI
+async function getUSDToINRCurrencyAPI() {
+    // Fetch USD to INR rate
+    // Using RAPID API 
+    // Free tier - 1250 requests/month
+
+    const currencyConversionUrl = 'https://currencyapi-net.p.rapidapi.com/rates?output=JSON&base=USD';
+    const currencyConversionOptions = {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-key': CURRENCY_CONVERSION_API_KEY,
+        }
+    };
+    const response = await fetch(currencyConversionUrl, currencyConversionOptions);
+    const result = await response.json();
+    console.log(result);
+
+    let conversionRate = result['rates']['INR']
+    return conversionRate
 }
 
 // Gets Rubrik's Stock price in USD
