@@ -1,8 +1,8 @@
 const stockGrant = 2900
 const CRORE = 10000000
 
-const taxPercentage = 0.3*(1.10)*(1.04)
-const multiplyForTaxDeduction = 1- taxPercentage // 34.32% bruh
+const taxPercentage = 0.3*(1.15)*(1.04)
+const multiplyForTaxDeduction = 1 - taxPercentage // 35.88% bruh
 
 let globalConversionRate = null
 
@@ -141,7 +141,8 @@ async function getRubrikStockPriceInUSDFromGoogle() {
     console.log("CurrentValue: " + JSON.stringify(currentValue, null, 2))
 
     if(currentValue){
-        val[CURRENT_PRICE_KEY] = parseFloat(currentValue)
+        const normalizedValue = currentValue.replace(',', '.');
+        val[CURRENT_PRICE_KEY] = parseFloat(normalizedValue)
     }
     return val
 }
