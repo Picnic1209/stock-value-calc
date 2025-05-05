@@ -1,7 +1,7 @@
 const stockGrant = 2900
 const CRORE = 10000000
 
-const taxPercentage = 0.3*(1.15)*(1.04)
+const taxPercentage = getSavedTaxPercentage();
 const multiplyForTaxDeduction = 1 - taxPercentage // 35.88% bruh
 
 let globalConversionRate = null
@@ -14,6 +14,16 @@ const proxyUrl = 'https://cloudflare-cors-anywhere.parag-cors-proxy.workers.dev/
 
 const CURRENT_PRICE_KEY = 'current_price'
 const AFTER_MARKET_PRICE_KEY = 'after_market_key'
+
+function getSavedTaxPercentage() {
+    const storedTax = localStorage.getItem('taxPercentage');
+    return storedTax !== null ? parseFloat(storedTax) : 0.3588; // default = 35.88%
+}
+
+function saveTaxPercentage(newTax) {
+    localStorage.setItem('taxPercentage', newTax);
+    location.reload(); // Reload to apply new tax value across calculations
+}
 
 // Gets USD to INR rate is the value is more stale than 1 hour
 async function getConversionRate() {
@@ -281,12 +291,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 document.addEventListener("DOMContentLoaded", function() {
+    const taxInput = document.getElementById('taxPercentageInput');
+    const saveButton = document.getElementById('saveTaxButton');
+
+    // Pre-fill the input with current value
+    taxInput.value = taxPercentage;
+
+    saveButton.addEventListener('click', () => {
+        const newTax = parseFloat(taxInput.value);
+        if (!isNaN(newTax) && newTax >= 0 && newTax <= 1) {
+            saveTaxPercentage(newTax);
+        } else {
+            alert("Please enter a valid value between 0 and 1");
+        }
+    });
     
 });
-
-function yourFunction(value) {
-    // Placeholder function - define the logic here
-    console.log("Number entered:", value);
-}
-
 
